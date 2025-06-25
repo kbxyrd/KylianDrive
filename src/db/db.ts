@@ -1,7 +1,10 @@
 // src/db/db.ts
-import Database from 'better-sqlite3'
-import { drizzle } from 'drizzle-orm/better-sqlite3'
-import { join } from 'path'
+import { createClient } from '@libsql/client'
+import { drizzle }      from 'drizzle-orm/libsql'
+import * as schema      from './schema/user'
 
-const sqlite = new Database(join(process.cwd(), 'localdb.sqlite'))
-export const db = drizzle(sqlite)
+// Ouvre (ou crée) ./local.db
+export const client = createClient({ url: 'file:local.db' })
+
+// Instancie Drizzle avec ton schéma
+export const db = drizzle(client, { schema })

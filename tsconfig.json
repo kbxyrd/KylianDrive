@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/*"]
-    },
-    "types": ["@types/node", "nuxt", "h3"],
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
-  }
+      "~/*": ["src/*"],
+      "@/*": ["src/*"],
+      "@db/*": ["src/db/*"]
+    }
+  },
+  "include": [
+    "global.d.ts",
+    "src/**/*.ts",
+    "server/**/*.ts",
+    "nuxt.config.ts"
+  ]
 }
