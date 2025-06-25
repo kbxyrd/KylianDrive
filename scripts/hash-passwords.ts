@@ -1,17 +1,17 @@
 // scripts/hash-passwords.ts
 import { createClient } from '@libsql/client'
 import { drizzle }      from 'drizzle-orm/libsql'
-import * as schema      from '../src/db/schema/user'
+import { users }        from '../src/db/schema/user'
 import { eq }           from 'drizzle-orm'
 import * as bcrypt      from 'bcrypt'
 
 async function migrate() {
     // 1) Connexion à local.db
     const client = createClient({ url: 'file:local.db' })
-    const db     = drizzle(client, { schema })
+    const db     = drizzle(client, { schema: { users } })
 
     // 2) Lecture de tous les utilisateurs
-    const allUsers = await db.select().from(schema.users)
+    const allUsers = await db.select().from(users)
 
     console.log(`Found ${allUsers.length} users. Starting migration…`)
 
@@ -26,9 +26,9 @@ async function migrate() {
         const hash = await bcrypt.hash(plain, 10)
         // MAJ en base en utilisant eq() pour la condition
         await db
-            .update(schema.users)
+            .update(users)
             .set({ password: hash })
-            .where(eq(schema.users.id, user.id))
+            .where(eq(users.id, user.id))
         console.log(`→ User ${user.id} migrated.`)
     }
 

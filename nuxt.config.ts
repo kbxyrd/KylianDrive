@@ -6,11 +6,8 @@ export default defineNuxtConfig({
   serverDir: 'server',
   nitro: {
     compatibilityDate: '2025-06-24'
-
   },
   runtimeConfig: {
-    // accessible côté serveur uniquement
-    jwtSecret: process.env.JWT_SECRET,
-    // ...
-  },
+    jwtSecret: process.env.JWT_SECRET
+  }
 })

@@ -1,36 +1,32 @@
 <template>
-  <div class="max-w-md mx-auto p-6">
-    <h1 class="text-2xl mb-4">Se connecter</h1>
-    <form @submit.prevent="onSubmit" class="space-y-4">
-      <div>
-        <label for="username" class="block mb-1">Nom d’utilisateur</label>
-        <input
-            id="username"
-            v-model="form.username"
-            type="text"
-            required
-            class="w-full border px-3 py-2 rounded"
-        />
-      </div>
-      <div>
-        <label for="password" class="block mb-1">Mot de passe</label>
-        <input
-            id="password"
-            v-model="form.password"
-            type="password"
-            required
-            class="w-full border px-3 py-2 rounded"
-        />
-      </div>
-      <button
-          type="submit"
-          :disabled="loading"
-          class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {{ loading ? 'Connexion…' : 'Se connecter' }}
-      </button>
-      <p v-if="error" class="mt-2 text-red-600">{{ error }}</p>
-    </form>
+  <div class="login-page">
+    <div class="login-card">
+      <h1>Se connecter</h1>
+      <form @submit.prevent="onSubmit">
+        <div class="form-group">
+          <label for="username">Nom d’utilisateur</label>
+          <input
+              id="username"
+              v-model="form.username"
+              type="text"
+              required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+          />
+        </div>
+        <button :disabled="loading">
+          {{ loading ? 'Connexion…' : 'Se connecter' }}
+        </button>
+        <p v-if="error" class="error">{{ error }}</p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -47,18 +43,16 @@ async function onSubmit() {
   loading.value = true
   error.value = null
   try {
-    // utilise fetch à la place de $fetch
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',  // pour envoyer/recevoir le cookie
+      credentials: 'include',
       body: JSON.stringify(form),
     })
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      throw new Error(err.message || 'Échec de la connexion')
+      const data = await res.json().catch(() => ({} as any))
+      throw new Error(data.statusMessage || data.message || 'Échec de la connexion')
     }
-    // tout s'est bien passé, on redirige
     router.push('/')
   } catch (err: any) {
     error.value = err.message
@@ -67,3 +61,77 @@ async function onSubmit() {
   }
 }
 </script>
+
+<style scoped>
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f2f4f7;
+  font-family: Arial, sans-serif;
+}
+
+.login-card {
+  background: #fff;
+  padding: 2rem;
+  width: 320px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h1 {
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccd0d5;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  width: 100%;
+  padding: 0.6rem;
+  background: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:disabled {
+  background: #a0bce6;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #005bb5;
+}
+
+.error {
+  margin-top: 1rem;
+  color: #d00;
+  font-size: 0.9rem;
+  text-align: center;
+}
+</style>
