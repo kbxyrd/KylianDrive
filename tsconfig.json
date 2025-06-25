@@ -5,6 +5,8 @@
       "~/*": ["./src/*"],
       "@/*": ["./src/*"]
     },
-    "types": ["@types/node", "nuxt", "h3"]
+    "types": ["@types/node", "nuxt", "h3"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   }
 }

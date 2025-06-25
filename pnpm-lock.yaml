@@ -19,19 +19,19 @@ importers:
         version: 3.0.2
       better-sqlite3:
         specifier: ^12.1.0
-        version: 12.1.0
+        version: 12.1.1
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
       drizzle-orm:
         specifier: ^0.44.2
-        version: 0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7)
+        version: 0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7)
       h3:
         specifier: ^1.15.3
         version: 1.15.3
       nuxt:
         specifier: ^3.17.5
-        version: 3.17.5(@libsql/client@0.15.9)(@parcel/watcher@2.5.1)(@types/node@24.0.4)(better-sqlite3@12.1.0)(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7))(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(encoding@0.1.13)(ioredis@5.6.1)(magicast@0.3.5)(rollup@4.44.0)(sqlite3@5.1.7)(terser@5.43.1)(tsx@4.20.3)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(yaml@2.8.0)
+        version: 3.17.5(@libsql/client@0.15.9)(@parcel/watcher@2.5.1)(@types/node@24.0.4)(better-sqlite3@12.1.1)(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7))(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(encoding@0.1.13)(ioredis@5.6.1)(magicast@0.3.5)(rollup@4.44.0)(sqlite3@5.1.7)(terser@5.43.1)(tsx@4.20.3)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(yaml@2.8.0)
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
@@ -1523,8 +1523,8 @@ packages:
     resolution: {integrity: sha512-k38b3XOZKv60C4E2hVsXTolJWfkGRMbILBIe2IBITXciy5bOsTKot5kDrf3ZfufQtQOUN5mXceUEpU1rTl9Uog==}
     hasBin: true
 
-  better-sqlite3@12.1.0:
-    resolution: {integrity: sha512-8f5xvlc6bcGZ57kYzQmeWYHqbKj57RRK/WiTrBGUowiX8ZbrgStWznBPIMGJi5MP7SNhJCKSc4TBaX9hhQL6Iw==}
+  better-sqlite3@12.1.1:
+    resolution: {integrity: sha512-xjl/TjWLy/6yLa5wkbQSjTgIgSiaEJy3XzjF5TAdiWaAsu/v0OCkYOc6tos+PkM/k4qURN2pFKTsbcG3gk29Uw==}
     engines: {node: 20.x || 22.x || 23.x || 24.x}
 
   bindings@1.5.0:
@@ -1608,8 +1608,8 @@ packages:
   caniuse-api@3.0.0:
     resolution: {integrity: sha512-bsTwuIg/BZZK/vreVTYYbSWoe2F+71P7K5QGEX+pT250DZbfU1MQ5prOKpPR+LL6uWKK3KMwMCAS74QB3Um1uw==}
 
-  caniuse-lite@1.0.30001724:
-    resolution: {integrity: sha512-WqJo7p0TbHDOythNTqYujmaJTvtYRZrjpP8TCvH6Vb9CYJerJNKamKzIWOM4BkQatWj9H2lYulpdAQNBe7QhNA==}
+  caniuse-lite@1.0.30001726:
+    resolution: {integrity: sha512-VQAUIUzBiZ/UnlM28fSp2CRF3ivUn1BWEvxMcVTNwpw91Py1pGbPIyIKtd+tzct9C3ouceCVdGAXxZOpZAsgdw==}
 
   chokidar@4.0.3:
     resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
@@ -5845,7 +5845,7 @@ snapshots:
   autoprefixer@10.4.21(postcss@8.5.6):
     dependencies:
       browserslist: 4.25.0
-      caniuse-lite: 1.0.30001724
+      caniuse-lite: 1.0.30001726
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.1.1
@@ -5868,7 +5868,7 @@ snapshots:
 
   bcryptjs@3.0.2: {}
 
-  better-sqlite3@12.1.0:
+  better-sqlite3@12.1.1:
     dependencies:
       bindings: 1.5.0
       prebuild-install: 7.1.3
@@ -5903,7 +5903,7 @@ snapshots:
 
   browserslist@4.25.0:
     dependencies:
-      caniuse-lite: 1.0.30001724
+      caniuse-lite: 1.0.30001726
       electron-to-chromium: 1.5.173
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.0)
@@ -5988,11 +5988,11 @@ snapshots:
   caniuse-api@3.0.0:
     dependencies:
       browserslist: 4.25.0
-      caniuse-lite: 1.0.30001724
+      caniuse-lite: 1.0.30001726
       lodash.memoize: 4.1.2
       lodash.uniq: 4.5.0
 
-  caniuse-lite@1.0.30001724: {}
+  caniuse-lite@1.0.30001726: {}
 
   chokidar@4.0.3:
     dependencies:
@@ -6211,11 +6211,11 @@ snapshots:
 
   data-uri-to-buffer@4.0.1: {}
 
-  db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7):
+  db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7):
     optionalDependencies:
       '@libsql/client': 0.15.9
-      better-sqlite3: 12.1.0
-      drizzle-orm: 0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7)
+      better-sqlite3: 12.1.1
+      drizzle-orm: 0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7)
       sqlite3: 5.1.7
 
   debug@4.4.1:
@@ -6355,11 +6355,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7):
+  drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7):
     optionalDependencies:
       '@libsql/client': 0.15.9
       '@types/better-sqlite3': 7.6.13
-      better-sqlite3: 12.1.0
+      better-sqlite3: 12.1.1
       sqlite3: 5.1.7
 
   dunder-proto@1.0.1:
@@ -7303,7 +7303,7 @@ snapshots:
       p-wait-for: 5.0.2
       qs: 6.14.0
 
-  nitropack@2.11.12(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(encoding@0.1.13)(sqlite3@5.1.7):
+  nitropack@2.11.12(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(encoding@0.1.13)(sqlite3@5.1.7):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@netlify/functions': 3.1.10(encoding@0.1.13)(rollup@4.44.0)
@@ -7325,7 +7325,7 @@ snapshots:
       cookie-es: 2.0.0
       croner: 9.1.0
       crossws: 0.3.5
-      db0: 0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7)
+      db0: 0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7)
       defu: 6.1.4
       destr: 2.0.5
       dot-prop: 9.0.0
@@ -7371,7 +7371,7 @@ snapshots:
       unenv: 2.0.0-rc.17
       unimport: 5.0.1
       unplugin-utils: 0.2.4
-      unstorage: 1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1)
+      unstorage: 1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1)
       untyped: 2.0.0
       unwasm: 0.3.9
       youch: 4.1.0-beta.8
@@ -7500,7 +7500,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  nuxt@3.17.5(@libsql/client@0.15.9)(@parcel/watcher@2.5.1)(@types/node@24.0.4)(better-sqlite3@12.1.0)(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7))(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(encoding@0.1.13)(ioredis@5.6.1)(magicast@0.3.5)(rollup@4.44.0)(sqlite3@5.1.7)(terser@5.43.1)(tsx@4.20.3)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(yaml@2.8.0):
+  nuxt@3.17.5(@libsql/client@0.15.9)(@parcel/watcher@2.5.1)(@types/node@24.0.4)(better-sqlite3@12.1.1)(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7))(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(encoding@0.1.13)(ioredis@5.6.1)(magicast@0.3.5)(rollup@4.44.0)(sqlite3@5.1.7)(terser@5.43.1)(tsx@4.20.3)(typescript@5.8.3)(vite@6.3.5(@types/node@24.0.4)(jiti@2.4.2)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(yaml@2.8.0):
     dependencies:
       '@nuxt/cli': 3.25.1(magicast@0.3.5)
       '@nuxt/devalue': 2.0.2
@@ -7535,7 +7535,7 @@ snapshots:
       mlly: 1.7.4
       mocked-exports: 0.1.1
       nanotar: 0.2.0
-      nitropack: 2.11.12(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(encoding@0.1.13)(sqlite3@5.1.7)
+      nitropack: 2.11.12(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(encoding@0.1.13)(sqlite3@5.1.7)
       nypm: 0.6.0
       ofetch: 1.4.1
       ohash: 2.0.11
@@ -7557,7 +7557,7 @@ snapshots:
       unimport: 5.0.1
       unplugin: 2.3.5
       unplugin-vue-router: 0.12.0(vue-router@4.5.1(vue@3.5.17(typescript@5.8.3)))(vue@3.5.17(typescript@5.8.3))
-      unstorage: 1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1)
+      unstorage: 1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1)
       untyped: 2.0.0
       vue: 3.5.17(typescript@5.8.3)
       vue-bundle-renderer: 2.1.1
@@ -8654,7 +8654,7 @@ snapshots:
       picomatch: 4.0.2
       webpack-virtual-modules: 0.6.2
 
-  unstorage@1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1):
+  unstorage@1.16.0(db0@0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7))(ioredis@5.6.1):
     dependencies:
       anymatch: 3.1.3
       chokidar: 4.0.3
@@ -8665,7 +8665,7 @@ snapshots:
       ofetch: 1.4.1
       ufo: 1.6.1
     optionalDependencies:
-      db0: 0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.0)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.0)(sqlite3@5.1.7))(sqlite3@5.1.7)
+      db0: 0.3.2(@libsql/client@0.15.9)(better-sqlite3@12.1.1)(drizzle-orm@0.44.2(@libsql/client@0.15.9)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.1.1)(sqlite3@5.1.7))(sqlite3@5.1.7)
       ioredis: 5.6.1
 
   untun@0.1.3:
