@@ -42,12 +42,12 @@ export default defineEventHandler(async (event: H3Event) => {
         )
     }
 
-    // on signe maintenant le rôle aussi
+
     const token = jwt.sign(
         {
             sub:      user.id,
             username: user.username,
-            role:     user.role    // ← ajout du rôle dans le payload
+            role:     user.role
         },
         secret,
         { expiresIn: '7d' }
@@ -60,7 +60,6 @@ export default defineEventHandler(async (event: H3Event) => {
         secure:   process.env.NODE_ENV === 'production',
     })
 
-    // on renvoie également le rôle côté client
     return {
         id:       user.id,
         username: user.username,

@@ -1,19 +1,27 @@
 {
+  "extends": "./.nuxt/tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.vue",
+    ".nuxt/types/**/*.d.ts",
+    "server/**/*.ts"
+  ],
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "strict": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"],
-      "@/*": ["src/*"],
-      "@db/*": ["src/db/*"]
-    }
-  },
-  "include": [
-    "global.d.ts",
-    "src/**/*.ts",
-    "server/**/*.ts",
-    "nuxt.config.ts"
-  ]
+      "#app": [".nuxt/types/app"],
+      "#build/*": [".nuxt/*"],
+      "#types/*": [".nuxt/types/*"],
+      "#pages/*": ["src/pages/*"],
+      "#components/*": ["src/components/*"]
+    },
+    "types": ["@nuxt/schema", "@nuxt/types"],
+    "noImplicitAny": false
+  }
 }

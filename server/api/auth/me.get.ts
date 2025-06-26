@@ -1,34 +1,36 @@
-// server/api/auth/me.get.ts
-import type { H3Event } from 'h3'
-import { defineEventHandler, createError } from 'h3'
-import jwt from 'jsonwebtoken'
+// server/api/me.get.ts
+import { defineEventHandler, getCookie, createError } from 'h3'
 
-export default defineEventHandler(async (event: H3Event) => {
-    const secret = process.env.JWT_SECRET!
-    // Récupère le cookie auth_token
-    const raw = event.node.req.headers.cookie
-        ?.split('; ')
-        .find(c => c.startsWith('auth_token='))
-        ?.split('=')[1]
+export interface UserPayload {
+    sub: number
+    username: string
+    role: string
+}
 
-    if (!raw) {
-        throw createError({ statusCode: 401, statusMessage: 'Pas authentifié' })
+// Décodage manuel du JWT sans dépendance externe
+function decodeJwt<T>(token: string): T {
+    const parts = token.split('.')
+    if (parts.length !== 3) throw new Error('Token JWT invalide')
+    const payload = parts[1]
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const json = Buffer.from(base64, 'base64').toString('utf-8')
+    return JSON.parse(json) as T
+}
+
+export default defineEventHandler((event) => {
+    const token = getCookie(event, 'token')
+    if (!token) {
+        throw createError({ statusCode: 401, statusMessage: 'Token manquant' })
     }
 
-    try {
-        // Le payload contient maintenant sub, username et role
-        const payload = jwt.verify(raw, secret) as {
-            sub: number
-            username: string
-            role: string
-        }
+    // Usage de la fonction maison
+    const payload = decodeJwt<UserPayload>(token)
 
-        return {
-            id:       payload.sub,
+    return {
+        user: {
+            sub: payload.sub,
             username: payload.username,
-            role:     payload.role
+            role: payload.role
         }
-    } catch {
-        throw createError({ statusCode: 401, statusMessage: 'Token invalide' })
     }
 })

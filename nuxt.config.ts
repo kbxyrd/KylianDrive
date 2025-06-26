@@ -5,9 +5,10 @@ export default defineNuxtConfig({
   srcDir: 'src/',
   serverDir: 'server',
   nitro: {
-    compatibilityDate: '2025-06-24'
+    compatibilityDate: '2025-06-26'
   },
   runtimeConfig: {
-    jwtSecret: process.env.JWT_SECRET
+    jwtSecret: process.env.JWT_SECRET,
+    public: {}
   }
 })

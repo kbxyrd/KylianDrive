@@ -1,113 +1,138 @@
 <template>
-  <div class="container">
-    <h1>Bienvenue sur DriveKylian</h1>
-
-    <div v-if="user" class="user-info">
-      <p>
-        Connecté en tant que&nbsp;
-        <span class="username">{{ user.username }}</span>&nbsp;(
-        <span class="user-role">{{ user.role }}</span> )
-      </p>
-      <p v-if="user.role === 'admin'" class="alert admin">
-        🔑 Vous avez les droits administrateur.
-      </p>
-      <p v-else class="alert user">
-        👤 Vous êtes un utilisateur standard.
-      </p>
-    </div>
-
-    <div v-else class="login-prompt">
-      <NuxtLink to="/login" class="login-link">Se connecter</NuxtLink>
+  <div class="login-page">
+    <div class="login-card">
+      <h1>Se connecter</h1>
+      <form @submit.prevent="onSubmit">
+        <div class="form-group">
+          <label for="username">Nom d’utilisateur</label>
+          <input
+              id="username"
+              v-model="form.username"
+              type="text"
+              required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              required
+          />
+        </div>
+        <button :disabled="loading">
+          {{ loading ? 'Connexion…' : 'Se connecter' }}
+        </button>
+        <p v-if="error" class="error">{{ error }}</p>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-interface MeResponse { id: number; username: string; role: string }
+const router = useRouter()
+const form = reactive({ username: '', password: '' })
+const loading = ref(false)
+const error = ref<string | null>(null)
 
-const user = ref<MeResponse | null>(null)
-
-onMounted(async () => {
+async function onSubmit() {
+  loading.value = true
+  error.value = null
   try {
-    const res = await fetch('/api/auth/me', { credentials: 'include' })
-    if (!res.ok) throw new Error()
-    user.value = await res.json()
-  } catch {
-    user.value = null
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(form),
+    })
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({} as any))
+      throw new Error(data.statusMessage || data.message || 'Échec de la connexion')
+    }
+    // une fois connecté·e, on va au dashboard
+    router.push('/dashboard')
+  } catch (err: any) {
+    error.value = err.message
+  } finally {
+    loading.value = false
   }
-})
+}
 </script>
 
 <style scoped>
-.container {
-  max-width: 500px;
-  margin: 3rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  font-family: sans-serif;
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #f2f4f7;
+  font-family: Arial, sans-serif;
 }
 
-h1 {
-  text-align: center;
+.login-card {
+  background: #fff;
+  padding: 2rem;
+  width: 320px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-card h1 {
   margin-bottom: 1.5rem;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
+  text-align: center;
   color: #333;
 }
 
-.user-info {
-  font-size: 1rem;
-  color: #444;
-  line-height: 1.6;
+.form-group {
+  margin-bottom: 1rem;
 }
 
-.username {
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
   font-weight: 600;
-}
-
-.user-role {
-  font-style: italic;
   color: #555;
 }
 
-.alert {
-  margin-top: 1rem;
-  padding: 0.75rem;
+.form-group input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccd0d5;
   border-radius: 4px;
+  font-size: 1rem;
 }
 
-.alert.admin {
-  background: #e0f7e9;
-  border-left: 4px solid #2a9d8f;
-  color: #276749;
-}
-
-.alert.user {
-  background: #e8f0fe;
-  border-left: 4px solid #3b82f6;
-  color: #1e40af;
-}
-
-.login-prompt {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.login-link {
-  display: inline-block;
-  padding: 0.6rem 1.2rem;
-  background: #3b82f6;
+button {
+  width: 100%;
+  padding: 0.6rem;
+  background: #0070f3;
   color: #fff;
-  text-decoration: none;
+  border: none;
   border-radius: 4px;
-  transition: background .2s;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.login-link:hover {
-  background: #2563eb;
+button:disabled {
+  background: #a0bce6;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #005bb5;
+}
+
+.error {
+  margin-top: 1rem;
+  color: #d00;
+  font-size: 0.9rem;
+  text-align: center;
 }
 </style>
