@@ -1,24 +1,44 @@
-import { defineEventHandler, readMultipartFormData, createError, getCookie } from 'h3'
-import { storeFile } from '../../utils/files'
-import { getUserFromToken } from '../../utils/auth'
+import { defineEventHandler, readMultipartFormData, createError } from 'h3'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { r2, BUCKET } from '../../utils/r2'
 
 export default defineEventHandler(async (event) => {
-    // Auth
-    const token = getCookie(event, 'token')
-    if (!token) throw createError({ statusCode: 401 })
-    const user = getUserFromToken(token)
-    if (!['USER','ADMIN'].includes(user.role)) {
-        throw createError({ statusCode: 403 })
+    // Lit le form-data
+    const parts = await readMultipartFormData(event)
+    if (!parts || parts.length === 0) {
+        throw createError({ statusCode: 400, statusMessage: 'Aucun fichier reçu' })
     }
 
-    // On force parts à toujours être un tableau
-    const parts = (await readMultipartFormData(event)) ?? []
-    const filePart = parts.find(p => (p as any).fieldName === 'file')
-    if (!filePart || !(filePart as any).filename) {
-        throw createError({ statusCode: 400, statusMessage: 'Aucun fichier envoyé' })
+    // Récupère la partie nommée 'file'
+    const filePart = parts.find(p => p.name === 'file')
+    if (!filePart) {
+        throw createError({ statusCode: 400, statusMessage: 'Champ "file" manquant' })
     }
+
+    // On suppose que filePart.data contient un Buffer et filePart.type le mime-type
+    const { data, filename, type: mimeType } = filePart as any
+
+    // Construit une clé unique (userId/timestamp_filename)
+    const userId = event.context.auth.user.id
+    const key = `${userId}/${Date.now()}_${filename}`
 
     // Upload sur R2
-    const meta = await storeFile(user.sub, filePart as any)
-    return { file: meta }
+    await r2.send(new PutObjectCommand({
+        Bucket: BUCKET,
+        Key: key,
+        Body: data,
+        ContentType: mimeType
+    }))
+
+    // Enregistre en base avec Prisma
+    await event.context.prisma.file.create({
+        data: {
+            filename,
+            size: (data as Buffer).byteLength,
+            key,
+            ownerId: userId
+        }
+    })
+
+    return { success: true }
 })

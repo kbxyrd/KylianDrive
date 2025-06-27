@@ -7,7 +7,6 @@ export interface UserPayload {
     role: string
 }
 
-// Décodage manuel du JWT sans dépendance externe
 function decodeJwt<T>(token: string): T {
     const parts = token.split('.')
     if (parts.length !== 3) throw new Error('Token JWT invalide')

@@ -1,22 +1,30 @@
-// server/api/files/delete.post.ts
-import { defineEventHandler, getCookie, createError, readBody } from 'h3'
-import { deleteFile }              from '../../utils/files'
-import { getUserFromToken }        from '../../utils/auth'
+import { defineEventHandler, readBody, createError } from 'h3'
+import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { r2, BUCKET } from '../../utils/r2'
 
 export default defineEventHandler(async (event) => {
-    const token = getCookie(event, 'token')
-    if (!token) throw createError({ statusCode: 401 })
-
-    const user = getUserFromToken(token)
-    if (!['USER','ADMIN'].includes(user.role)) {
-        throw createError({ statusCode: 403 })
-    }
-
+    // Récupère l’ID du fichier à supprimer
     const { id } = await readBody(event)
-    if (typeof id !== 'string') {
-        throw createError({ statusCode: 400, statusMessage: 'Identifiant invalide' })
+
+    // Cherche le fichier en base
+    const file = await event.context.prisma.file.findUnique({ where: { id } })
+    if (!file) {
+        throw createError({ statusCode: 404, statusMessage: 'Fichier introuvable' })
     }
 
-    await deleteFile(user, id)
+    const { role, id: userId } = event.context.auth.user
+    if (role !== 'ADMIN' && file.ownerId !== userId) {
+        throw createError({ statusCode: 403, statusMessage: 'Accès refusé' })
+    }
+
+    // Supprime dans R2
+    await r2.send(new DeleteObjectCommand({
+        Bucket: BUCKET,
+        Key: file.key
+    }))
+
+    // Supprime en base
+    await event.context.prisma.file.delete({ where: { id } })
+
     return { success: true }
 })

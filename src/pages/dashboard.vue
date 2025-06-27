@@ -2,108 +2,138 @@
   <div class="p-6 max-w-4xl mx-auto space-y-8">
     <h1 class="text-3xl font-bold">Tableau de bord</h1>
 
-    <!-- Autres sections de ton dashboard -->
-    <section class="bg-white shadow rounded p-4">
-      <h2 class="text-2xl font-semibold mb-4">Bienvenue, {{ user.username }}</h2>
-      <!-- … -->
-    </section>
+    <!-- Loader global -->
+    <div v-if="loading" class="text-center py-10">Chargement…</div>
 
-    <!-- Gestionnaire de fichiers -->
-    <section class="bg-white shadow rounded p-6">
-      <h2 class="text-2xl font-semibold mb-4">Mes fichiers</h2>
-
+    <!-- SECTION USER -->
+    <section v-else-if="role === 'USER'" class="space-y-6">
+      <h2 class="text-2xl font-semibold">Mes fichiers</h2>
       <!-- Upload -->
-      <div class="mb-6">
+      <div>
         <label class="block mb-2 font-medium">Ajouter un fichier</label>
-        <input
-            type="file"
-            @change="upload"
-            class="border rounded p-2 w-full"
-        />
+        <input type="file" @change="onUpload" class="border rounded p-2 w-full" />
       </div>
-
       <!-- Liste des fichiers -->
       <ul class="space-y-4">
-        <li
-            v-for="f in files"
-            :key="f.id"
-            class="flex items-center justify-between border rounded p-3"
-        >
+        <li v-for="file in files" :key="file.id" class="flex items-center justify-between border rounded p-3">
           <div>
-            <p class="font-medium">{{ f.filename }}</p>
-            <p class="text-sm text-gray-600">{{ f.size }} bytes</p>
+            <p class="font-medium">{{ file.filename }}</p>
+            <p class="text-sm text-gray-600">{{ file.size }} bytes</p>
           </div>
           <div class="flex space-x-2">
-            <a
-                :href="`/api/files/download/${f.id}`"
-                download
-                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
+            <a :href="file.url" download class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
               Télécharger
             </a>
-            <button
-                @click="remove(f.id)"
-                class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-            >
+            <button @click="onDelete(file.id)" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
               Supprimer
             </button>
           </div>
         </li>
       </ul>
     </section>
+
+    <!-- SECTION ADMIN -->
+    <section v-else-if="role === 'ADMIN'" class="space-y-6">
+      <h2 class="text-2xl font-semibold">Statistiques utilisateurs</h2>
+      <table class="w-full table-auto border-collapse">
+        <thead>
+        <tr class="bg-gray-100">
+          <th class="border px-4 py-2">Username</th>
+          <th class="border px-4 py-2">Email</th>
+          <th class="border px-4 py-2">Nb fichiers</th>
+          <th class="border px-4 py-2">Stockage total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="u in stats" :key="u.id">
+          <td class="border px-4 py-2">{{ u.username }}</td>
+          <td class="border px-4 py-2">{{ u.email }}</td>
+          <td class="border px-4 py-2">{{ u.count }}</td>
+          <td class="border px-4 py-2">{{ u.totalSize }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CAS IMPREVU -->
+    <section v-else class="text-red-500">
+      Rôle inconnu – accès impossible.
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-// Si tu as déjà récupéré ton utilisateur dans ce composant, sinon adapte
-import { ref, onMounted } from 'vue'
-import { useFetch } from '#app'
+// Composition API
+import { ref, onMounted, computed } from 'vue'
+// Import explicite pour lever l'erreur TS
+import { useAuth } from '@sidebase/nuxt-auth'
+
+// Protége la page (Nuxt-Auth détecte et redirige si non auth)
+definePageMeta({ auth: true })
 
 interface FileEntry {
   id: string
   filename: string
   size: number
-  url?: string
+  url: string
 }
-const files = ref<FileEntry[]>([])
-const user = ref<{ username: string }>({ username: '' })
-
-// Charge ton profil et ta liste de fichiers
-async function fetchDashboard() {
-  // Charge le user
-  try {
-    const me = await $fetch<{ sub: number; username: string; role: string }>('/api/auth/me', {
-      credentials: 'include'
-    })
-    user.value.username = me.username
-  } catch {
-    // si pas loggé, rediriger ou handle
-  }
-
-  // Charge les fichiers
-  const res = await $fetch<{ files: FileEntry[] }>('/api/files/list')
-  files.value = res.files
+interface Stat {
+  id: number
+  username: string
+  email: string
+  count: number
+  totalSize: number
 }
 
-onMounted(fetchDashboard)
+// Récupère status & data
+const { status, data: session } = useAuth()
 
-// Upload
-async function upload(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
+// Traitement du rôle
+const role = computed<string | null>(() => {
+  if (status.value !== 'authenticated' || !session.value?.user) return null
+  return session.value.user.role.toUpperCase()
+})
+
+// États locaux
+const loading = ref(true)
+const files   = ref<FileEntry[]>([])
+const stats   = ref<Stat[]>([])
+
+// Methods USER
+async function fetchFiles() {
+  const { files: f } = await $fetch<{ files: FileEntry[] }>('/api/files/list', { credentials: 'include' })
+  files.value = f
+}
+async function onUpload(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (!input.files?.[0]) return
   const form = new FormData()
-  form.append('file', file)
+  form.append('file', input.files[0])
   await $fetch('/api/files/upload', { method: 'POST', body: form })
-  await fetchDashboard()
+  await fetchFiles()
+}
+async function onDelete(id: string) {
+  await $fetch('/api/files/delete', { method: 'POST', body: { id } })
+  await fetchFiles()
 }
 
-// Suppression
-async function remove(id: string) {
-  await $fetch('/api/files/delete', { method: 'POST', body: { id } })
-  await fetchDashboard()
+// Method ADMIN
+async function fetchStats() {
+  const { stats: s } = await $fetch<{ stats: Stat[] }>('/api/admin/stats', { credentials: 'include' })
+  stats.value = s
 }
+
+// Initialisation
+onMounted(async () => {
+  if (role.value === 'USER') {
+    await fetchFiles()
+  } else if (role.value === 'ADMIN') {
+    await fetchStats()
+  }
+  loading.value = false
+})
 </script>
 
 <style scoped>
-/* Styles éventuels pour ton dashboard */
+/* Tes styles Tailwind ou custom ici */
 </style>

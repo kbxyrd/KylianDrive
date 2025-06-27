@@ -4,7 +4,8 @@
     "src/**/*.ts",
     "src/**/*.vue",
     ".nuxt/types/**/*.d.ts",
-    "server/**/*.ts"
+    "server/**/*.ts",
+    "types/**/*.d.ts"
   ],
   "compilerOptions": {
     "target": "ESNext",
@@ -19,9 +20,22 @@
       "#build/*": [".nuxt/*"],
       "#types/*": [".nuxt/types/*"],
       "#pages/*": ["src/pages/*"],
-      "#components/*": ["src/components/*"]
+      "#components/*": ["src/components/*"],
+      "~/*": ["./*"],
+      "@/*": ["./src/*"],
+      "#composables/*": ["src/composables/*"],
+      "#utils/*": ["src/utils/*"],
+      "#services/*": ["src/services/*"]
     },
-    "types": ["@nuxt/schema", "@nuxt/types"],
+    "types": [
+      "@nuxt/schema",
+      "@nuxt/types",
+      "@sidebase/nuxt-auth"
+    ],
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
     "noImplicitAny": false
   }
 }
