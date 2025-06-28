@@ -1,30 +1,45 @@
-import { defineEventHandler, readBody, createError } from 'h3'
-import { DeleteObjectCommand } from '@aws-sdk/client-s3'
-import { r2, BUCKET } from '../../utils/r2'
+import { defineEventHandler, readBody, getCookie, sendError, createError } from 'h3'
+import jwt from 'jsonwebtoken'
+import { db } from '../../../src/db/db'
+import { files } from '../../../src/db/schema/file'
+import { eq } from 'drizzle-orm'
+import fs from 'fs'
+import { join } from 'pathe'
 
 export default defineEventHandler(async (event) => {
-    // Récupère l’ID du fichier à supprimer
-    const { id } = await readBody(event)
+    // Auth
+    const token = getCookie(event, 'auth_token')
+    const secret = process.env.JWT_SECRET
+    if (!token || !secret) {
+        return sendError(event, createError({ statusCode: 401, statusMessage: 'Non authentifié' }))
+    }
+    let payload: any
+    try { payload = jwt.verify(token, secret) }
+    catch { return sendError(event, createError({ statusCode: 401, statusMessage: 'Token invalide' })) }
+    const userId = payload.sub as number
 
-    // Cherche le fichier en base
-    const file = await event.context.prisma.file.findUnique({ where: { id } })
-    if (!file) {
-        throw createError({ statusCode: 404, statusMessage: 'Fichier introuvable' })
+    // Body
+    const { id } = await readBody<{ id: number }>(event)
+    if (!id) {
+        return sendError(event, createError({ statusCode: 400, statusMessage: 'ID manquant' }))
     }
 
-    const { role, id: userId } = event.context.auth.user
-    if (role !== 'ADMIN' && file.ownerId !== userId) {
-        throw createError({ statusCode: 403, statusMessage: 'Accès refusé' })
+    // Récupère le chemin
+    const [record] = await db
+        .select({ path: files.path })
+        .from(files)
+        .where(eq(files.id, id), eq(files.userId, userId))
+
+    if (!record) {
+        return sendError(event, createError({ statusCode: 404, statusMessage: 'Fichier introuvable' }))
     }
 
-    // Supprime dans R2
-    await r2.send(new DeleteObjectCommand({
-        Bucket: BUCKET,
-        Key: file.key
-    }))
+    // Supprime du FS
+    const filePath = join(process.cwd(), 'public/uploads', record.path)
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-    // Supprime en base
-    await event.context.prisma.file.delete({ where: { id } })
+    // Supprime de la base
+    await db.delete(files).where(eq(files.id, id), eq(files.userId, userId))
 
-    return { success: true }
+    return { ok: true }
 })

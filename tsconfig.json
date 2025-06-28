@@ -14,6 +14,7 @@
     "esModuleInterop": true,
     "allowJs": true,
     "strict": true,
+    "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
       "#app": [".nuxt/types/app"],
@@ -25,9 +26,13 @@
       "@/*": ["./src/*"],
       "#composables/*": ["src/composables/*"],
       "#utils/*": ["src/utils/*"],
-      "#services/*": ["src/services/*"]
+      "#services/*": ["src/services/*"],
+      "@libsql/client": ["node_modules/@libsql/client"],
+      "drizzle-orm/libsql": ["node_modules/drizzle-orm/libsql/index.cjs"],
+      "drizzle-orm/sqlite3": ["node_modules/drizzle-orm/sqlite3/index.js"]
     },
     "types": [
+      "node",
       "@nuxt/schema",
       "@nuxt/types",
       "@sidebase/nuxt-auth"

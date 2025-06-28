@@ -1,44 +1,60 @@
-import { defineEventHandler, readMultipartFormData, createError } from 'h3'
-import { PutObjectCommand } from '@aws-sdk/client-s3'
-import { r2, BUCKET } from '../../utils/r2'
+// server/api/files/upload.post.ts
+import { defineEventHandler, readMultipartFormData, getCookie, sendError, createError } from 'h3'
+import jwt from 'jsonwebtoken'
+import { db } from '../../../src/db/db'
+import { files } from '../../../src/db/schema/file'
+import { v4 as uuid } from 'uuid'
+import fs from 'fs'
+import { join } from 'pathe'
 
 export default defineEventHandler(async (event) => {
-    // Lit le form-data
-    const parts = await readMultipartFormData(event)
-    if (!parts || parts.length === 0) {
-        throw createError({ statusCode: 400, statusMessage: 'Aucun fichier reçu' })
+    // Auth
+    const token = getCookie(event, 'auth_token')
+    const secret = process.env.JWT_SECRET
+    if (!token || !secret) {
+        return sendError(event, createError({ statusCode: 401, statusMessage: 'Non authentifié' }))
     }
+    let payload: any
+    try {
+        payload = jwt.verify(token, secret)
+    } catch {
+        return sendError(event, createError({ statusCode: 401, statusMessage: 'Token invalide' }))
+    }
+    const userId = payload.sub as number
 
-    // Récupère la partie nommée 'file'
-    const filePart = parts.find(p => p.name === 'file')
+    // Lecture du form-data
+    const parts = (await readMultipartFormData(event)) || []
+    // On filtre par name (nom de champ) et filename
+    const filePart = parts.find((p): p is { name: string; filename: string; data: any } => p.name === 'file' && !!p.filename)
     if (!filePart) {
-        throw createError({ statusCode: 400, statusMessage: 'Champ "file" manquant' })
+        return sendError(event, createError({ statusCode: 400, statusMessage: 'Aucun fichier reçu' }))
     }
 
-    // On suppose que filePart.data contient un Buffer et filePart.type le mime-type
-    const { data, filename, type: mimeType } = filePart as any
+    // Convertir data en Buffer
+    let buffer: Buffer
+    const data = filePart.data
+    if (Buffer.isBuffer(data)) {
+        buffer = data
+    } else if (data && typeof (data as any).arrayBuffer === 'function') {
+        const arr = await (data as any).arrayBuffer()
+        buffer = Buffer.from(arr)
+    } else {
+        return sendError(event, createError({ statusCode: 400, statusMessage: 'Données du fichier invalides' }))
+    }
 
-    // Construit une clé unique (userId/timestamp_filename)
-    const userId = event.context.auth.user.id
-    const key = `${userId}/${Date.now()}_${filename}`
+    const originalName = filePart.filename
+    const ext = originalName.includes('.') ? originalName.split('.').pop() : ''
+    const name = `${uuid()}${ext ? `.${ext}` : ''}`
 
-    // Upload sur R2
-    await r2.send(new PutObjectCommand({
-        Bucket: BUCKET,
-        Key: key,
-        Body: data,
-        ContentType: mimeType
-    }))
+    // Prépare le dossier uploads
+    const uploadDir = join(process.cwd(), 'public/uploads')
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
 
-    // Enregistre en base avec Prisma
-    await event.context.prisma.file.create({
-        data: {
-            filename,
-            size: (data as Buffer).byteLength,
-            key,
-            ownerId: userId
-        }
-    })
+    // Écrit le fichier
+    await fs.promises.writeFile(join(uploadDir, name), buffer)
 
-    return { success: true }
+    // Enregistre en base
+    await db.insert(files).values({ filename: originalName, size: buffer.byteLength, path: name, userId })
+
+    return { ok: true }
 })

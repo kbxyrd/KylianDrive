@@ -1,35 +1,50 @@
-// server/api/me.get.ts
-import { defineEventHandler, getCookie, createError } from 'h3'
+// server/api/auth/me.get.ts
+import { defineEventHandler, getCookie, sendError, createError } from 'h3'
+import jwt from 'jsonwebtoken'
+import { db } from '../../../src/db/db'
+import { users } from '../../../src/db/schema/user'
+import { eq } from 'drizzle-orm'
 
-export interface UserPayload {
-    sub: number
-    username: string
-    role: string
-}
+export default defineEventHandler(async (event) => {
+    // Récupère le token dans le cookie
+    const token = getCookie(event, 'auth_token')
+    const secret = process.env.JWT_SECRET
 
-function decodeJwt<T>(token: string): T {
-    const parts = token.split('.')
-    if (parts.length !== 3) throw new Error('Token JWT invalide')
-    const payload = parts[1]
-    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
-    const json = Buffer.from(base64, 'base64').toString('utf-8')
-    return JSON.parse(json) as T
-}
-
-export default defineEventHandler((event) => {
-    const token = getCookie(event, 'token')
-    if (!token) {
-        throw createError({ statusCode: 401, statusMessage: 'Token manquant' })
+    if (!token || !secret) {
+        return sendError(
+            event,
+            createError({ statusCode: 401, statusMessage: 'Non authentifié' })
+        )
     }
 
-    // Usage de la fonction maison
-    const payload = decodeJwt<UserPayload>(token)
-
-    return {
-        user: {
-            sub: payload.sub,
-            username: payload.username,
-            role: payload.role
-        }
+    // Vérifie et décode le JWT
+    let payload: any
+    try {
+        payload = jwt.verify(token, secret)
+    } catch {
+        return sendError(
+            event,
+            createError({ statusCode: 401, statusMessage: 'Token invalide' })
+        )
     }
+
+    // Recherche l'utilisateur en base (sans l'email)
+    const [user] = await db
+        .select({
+            id: users.id,
+            username: users.username,
+            role: users.role,
+        })
+        .from(users)
+        .where(eq(users.id, payload.sub))
+
+    if (!user) {
+        return sendError(
+            event,
+            createError({ statusCode: 404, statusMessage: 'Utilisateur introuvable' })
+        )
+    }
+
+    // On renvoie uniquement id, username et role
+    return { user }
 })
