@@ -15,9 +15,6 @@ export interface FileMetadata {
     url: string
 }
 
-/**
- * Envoie un fichier sur R2 et renvoie ses métadonnées.
- */
 export async function storeFile(
     userId: number,
     file: any
@@ -44,9 +41,7 @@ export async function storeFile(
     }
 }
 
-/**
- * Liste tous les fichiers stockés pour un utilisateur.
- */
+
 export async function listFiles(userId: number): Promise<FileMetadata[]> {
     const out = await r2.send(
         new ListObjectsV2Command({
@@ -68,9 +63,7 @@ export async function listFiles(userId: number): Promise<FileMetadata[]> {
     })
 }
 
-/**
- * Récupère un flux de lecture pour le fichier demandé.
- */
+
 export async function getFileStream(
     user: { sub: number; role: string },
     id: string
@@ -85,9 +78,7 @@ export async function getFileStream(
     return res.Body as any
 }
 
-/**
- * Supprime le fichier du bucket R2.
- */
+
 export async function deleteFile(
     user: { sub: number; role: string },
     id: string

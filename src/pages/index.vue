@@ -1,28 +1,36 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h1>Se connecter</h1>
+      <h1>{{ isRegister ? "S'inscrire" : 'Se connecter' }}</h1>
+      <!-- Toggle Connexion / Inscription -->
+      <div class="toggle-links">
+        <button
+            :class="{ active: !isRegister }"
+            type="button"
+            @click="isRegister = false"
+        >
+          Connexion
+        </button>
+        <button
+            :class="{ active: isRegister }"
+            type="button"
+            @click="isRegister = true"
+        >
+          Inscription
+        </button>
+      </div>
+
       <form @submit.prevent="onSubmit">
         <div class="form-group">
           <label for="username">Nom d’utilisateur</label>
-          <input
-              id="username"
-              v-model="form.username"
-              type="text"
-              required
-          />
+          <input id="username" v-model="form.username" type="text" required />
         </div>
         <div class="form-group">
           <label for="password">Mot de passe</label>
-          <input
-              id="password"
-              v-model="form.password"
-              type="password"
-              required
-          />
+          <input id="password" v-model="form.password" type="password" required />
         </div>
         <button :disabled="loading">
-          {{ loading ? 'Connexion…' : 'Se connecter' }}
+          {{ loading ? (isRegister ? 'Inscription…' : 'Connexion…') : (isRegister ? "S'inscrire" : 'Se connecter') }}
         </button>
         <p v-if="error" class="error">{{ error }}</p>
       </form>
@@ -35,6 +43,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const isRegister = ref(false)
 const form = reactive({ username: '', password: '' })
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -43,7 +52,8 @@ async function onSubmit() {
   loading.value = true
   error.value = null
   try {
-    const res = await fetch('/api/auth/login', {
+    const endpoint = isRegister.value ? '/api/auth/register' : '/api/auth/login'
+    const res = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -51,9 +61,8 @@ async function onSubmit() {
     })
     if (!res.ok) {
       const data = await res.json().catch(() => ({} as any))
-      throw new Error(data.statusMessage || data.message || 'Échec de la connexion')
+      throw new Error(data.statusMessage || data.message || (isRegister.value ? "Échec de l'inscription" : 'Échec de la connexion'))
     }
-    // une fois connecté·e, on va au dashboard
     router.push('/dashboard')
   } catch (err: any) {
     error.value = err.message
@@ -82,23 +91,42 @@ async function onSubmit() {
 }
 
 .login-card h1 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
   text-align: center;
   color: #333;
 }
 
+.toggle-links {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.toggle-links button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  transition: color 0.2s;
+}
+.toggle-links button.active {
+  color: #0070f3;
+}
+.toggle-links button:not(.active):hover {
+  color: #0070f3;
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
-
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #555;
 }
-
 .form-group input {
   width: 100%;
   padding: 0.5rem;
@@ -119,12 +147,10 @@ button {
   cursor: pointer;
   transition: background 0.2s;
 }
-
 button:disabled {
   background: #a0bce6;
   cursor: not-allowed;
 }
-
 button:hover:not(:disabled) {
   background: #005bb5;
 }

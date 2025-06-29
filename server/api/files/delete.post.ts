@@ -34,7 +34,6 @@ export default defineEventHandler(async (event) => {
         return sendError(event, createError({ statusCode: 404, statusMessage: 'Fichier introuvable' }))
     }
 
-    // Supprime du FS
     const filePath = join(process.cwd(), 'public/uploads', record.path)
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 

@@ -22,15 +22,12 @@ export default defineEventHandler(async (event) => {
     }
     const userId = payload.sub as number
 
-    // Lecture du form-data
     const parts = (await readMultipartFormData(event)) || []
-    // On filtre par name (nom de champ) et filename
     const filePart = parts.find((p): p is { name: string; filename: string; data: any } => p.name === 'file' && !!p.filename)
     if (!filePart) {
         return sendError(event, createError({ statusCode: 400, statusMessage: 'Aucun fichier reçu' }))
     }
 
-    // Convertir data en Buffer
     let buffer: Buffer
     const data = filePart.data
     if (Buffer.isBuffer(data)) {
@@ -50,10 +47,8 @@ export default defineEventHandler(async (event) => {
     const uploadDir = join(process.cwd(), 'public/uploads')
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
 
-    // Écrit le fichier
     await fs.promises.writeFile(join(uploadDir, name), buffer)
 
-    // Enregistre en base
     await db.insert(files).values({ filename: originalName, size: buffer.byteLength, path: name, userId })
 
     return { ok: true }

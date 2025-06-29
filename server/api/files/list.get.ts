@@ -42,7 +42,6 @@ export default defineEventHandler(async (event) => {
 
         return { files: filesWithUrl }
     } catch (err: any) {
-        // Affichez en console pour debugger
         console.error('Erreur /api/files/list :', err)
         return sendError(event, createError({ statusCode: 500, statusMessage: err.message }))
     }

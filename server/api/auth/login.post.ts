@@ -22,7 +22,6 @@ export default defineEventHandler(async (event: H3Event) => {
         return sendError(event, createError({ statusCode: 400, statusMessage: 'Champs manquants' }))
     }
 
-    // récupère l'utilisateur
     const [user] = await db
         .select()
         .from(users)
@@ -37,14 +36,12 @@ export default defineEventHandler(async (event: H3Event) => {
         return sendError(event, createError({ statusCode: 500, statusMessage: 'JWT_SECRET non configuré' }))
     }
 
-    // génère le token
     const token = jwt.sign(
         { sub: user.id, username: user.username, role: user.role },
         secret,
         { expiresIn: '7d' }
     )
 
-    // pose le cookie
     setCookie(event, 'auth_token', token, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,  // 7 jours

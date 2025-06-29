@@ -6,7 +6,6 @@ import { users } from '../../../src/db/schema/user'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-    // Récupère le token dans le cookie
     const token = getCookie(event, 'auth_token')
     const secret = process.env.JWT_SECRET
 
@@ -17,7 +16,6 @@ export default defineEventHandler(async (event) => {
         )
     }
 
-    // Vérifie et décode le JWT
     let payload: any
     try {
         payload = jwt.verify(token, secret)
@@ -28,7 +26,6 @@ export default defineEventHandler(async (event) => {
         )
     }
 
-    // Recherche l'utilisateur en base (sans l'email)
     const [user] = await db
         .select({
             id: users.id,
@@ -45,6 +42,5 @@ export default defineEventHandler(async (event) => {
         )
     }
 
-    // On renvoie uniquement id, username et role
     return { user }
 })

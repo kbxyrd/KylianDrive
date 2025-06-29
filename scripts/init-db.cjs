@@ -2,10 +2,10 @@
 const { createClient } = require('@libsql/client')
 
 ;(async () => {
-    // Ouvre (ou crée) local.db
+
     const client = createClient({ url: 'file:./local.db' })
 
-    // Exécute le SQL de création de table
+
     await client.execute(`
     CREATE TABLE IF NOT EXISTS files (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,
