@@ -43,7 +43,6 @@ export default defineEventHandler(async (event) => {
     const ext = originalName.includes('.') ? originalName.split('.').pop() : ''
     const name = `${uuid()}${ext ? `.${ext}` : ''}`
 
-    // Prépare le dossier uploads
     const uploadDir = join(process.cwd(), 'public/uploads')
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true })
 

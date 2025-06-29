@@ -44,12 +44,11 @@ export default defineEventHandler(async (event: H3Event) => {
 
     setCookie(event, 'auth_token', token, {
         httpOnly: true,
-        maxAge: 60 * 60 * 24 * 7,  // 7 jours
+        maxAge: 60 * 60 * 24 * 7,
         sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production', // false en dev
-        path: '/', // essentiel pour que /api/auth/me le reçoive
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
     })
 
-    // on renvoie l'utilisateur (sans le mot de passe)
     return { id: user.id, username: user.username, role: user.role }
 })

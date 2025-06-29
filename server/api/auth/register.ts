@@ -12,28 +12,23 @@ export default defineEventHandler(async (event: H3Event) => {
     const username = body.username?.trim() ?? ''
     const password = body.password ?? ''
 
-    // Validation des champs
     if (!username || !password) {
         return sendError(event, createError({ statusCode: 400, statusMessage: 'Champs manquants' }))
     }
 
-    // Vérifier unicité du nom d'utilisateur
     const [existing] = await db.select().from(users).where(eq(users.username, username))
     if (existing) {
         return sendError(event, createError({ statusCode: 409, statusMessage: 'Nom d’utilisateur déjà pris' }))
     }
 
-    // Hash du mot de passe
     const hashed = await bcrypt.hash(password, 12)
 
-    // Insertion en base
     const [newUser] = await db.insert(users).values({
         username,
         password: hashed,
         role: 'USER',
     }).returning()
 
-    // Création du token JWT
     const secret = process.env.JWT_SECRET
     if (!secret) {
         return sendError(event, createError({ statusCode: 500, statusMessage: 'JWT_SECRET non configuré' }))
@@ -44,7 +39,6 @@ export default defineEventHandler(async (event: H3Event) => {
         { expiresIn: '7d' }
     )
 
-    // Cookie HTTP-only
     setCookie(event, 'auth_token', token, {
         httpOnly: true,
         maxAge: 60 * 60 * 24 * 7,
@@ -53,6 +47,5 @@ export default defineEventHandler(async (event: H3Event) => {
         path: '/',
     })
 
-    // Retourner l'utilisateur sans mot de passe
     return { id: newUser.id, username: newUser.username, role: newUser.role }
 })

@@ -22,3 +22,8 @@ logs
 .env
 .env.*
 !.env.example
+# Base de données locale
+local.db
+
+# Dossier des fichiers uploadés
+public/uploads/

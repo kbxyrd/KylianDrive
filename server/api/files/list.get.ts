@@ -32,7 +32,6 @@ export default defineEventHandler(async (event) => {
             .from(files)
             .where(eq(files.userId, userId))
 
-        // 3) Construction des URLs publiques
         const filesWithUrl = list.map(f => ({
             id:       f.id.toString(),
             filename: f.filename,

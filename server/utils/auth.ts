@@ -11,7 +11,6 @@ export function getUserFromToken(token: string): UserPayload {
         throw new Error('Token JWT invalide')
     }
 
-    // Base64Url → JSON
     const payloadBase64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
     const json = Buffer.from(payloadBase64, 'base64').toString('utf-8')
     const data = JSON.parse(json)

@@ -52,11 +52,11 @@ export async function listFiles(userId: number): Promise<FileMetadata[]> {
     const objects = out.Contents || []
 
     return objects.map(obj => {
-        const key = obj.Key!          // ex: "42/uuid"
-        const id = key.split('/')[1]  // ex: "uuid"
+        const key = obj.Key!
+        const id = key.split('/')[1]
         return {
             id,
-            filename: id,               // si tu veux le vrai nom, conserve-le en base
+            filename: id,
             size: obj.Size || 0,
             url: `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET}/${key}`
         }

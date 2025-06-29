@@ -24,7 +24,6 @@ export default defineEventHandler(async (event) => {
         return sendError(event, createError({ statusCode: 400, statusMessage: 'ID manquant' }))
     }
 
-    // Récupère le chemin
     const [record] = await db
         .select({ path: files.path })
         .from(files)
@@ -37,7 +36,6 @@ export default defineEventHandler(async (event) => {
     const filePath = join(process.cwd(), 'public/uploads', record.path)
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
 
-    // Supprime de la base
     await db.delete(files).where(eq(files.id, id), eq(files.userId, userId))
 
     return { ok: true }

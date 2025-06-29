@@ -7,7 +7,7 @@ import { users } from '../../../src/db/schema/user'
 import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-    // 1) Auth + JWT
+
     const token = getCookie(event, 'auth_token')
     const secret = process.env.JWT_SECRET
     if (!token || !secret) {
@@ -21,12 +21,12 @@ export default defineEventHandler(async (event) => {
         return sendError(event, createError({ statusCode: 401, message: 'Token invalide' }))
     }
 
-    // 2) Vérifie que c'est bien un ADMIN (insensible à la casse)
+
     if (String(payload.role).toLowerCase() !== 'admin') {
         return sendError(event, createError({ statusCode: 403, message: 'Accès refusé' }))
     }
 
-    // 3) Lecture en base : on ne récupère que les fichiers dont userId = payload.sub
+
     try {
         const list = await db
             .select({
