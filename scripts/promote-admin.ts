@@ -11,9 +11,9 @@ async function run() {
     await db
         .update(users)
         .set({ role: 'admin' })
-        .where(eq(users.username, ''))
+        .where(eq(users.username, 'kylian'))
 
-    console.log('Utilisateur kylian promu en admin.')
+    console.log('Utilisateur  promu en admin.')
 }
 
 run().catch(err => {

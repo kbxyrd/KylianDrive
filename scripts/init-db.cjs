@@ -16,9 +16,9 @@ const { createClient } = require('@libsql/client')
     );
   `)
 
-    console.log('✅ Table "files" OK dans local.db')
+    console.log('Table "" OK dans local.db')
     process.exit(0)
 })().catch(err => {
-    console.error('❌ Erreur init-db:', err)
+    console.error(' Erreur init-db:', err)
     process.exit(1)
 })

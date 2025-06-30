@@ -51,8 +51,11 @@ Rôle Admin défini dans un fichier externe au schéma principal.
 -IA : Claude, ChatGPT (m’ont fait gagner du temps pour la conception de code simple et m’ont guidé dans les parties plus complexes)
 -Nuxt.js Discord
 
----Commandes scipts---
 
+
+
+Commande pour les scripts
+
+pnpm tsx scripts/promote-admin.ts
 npm run migrate:hash-passwords
-npx tsx ./scripts/promote-admin.ts
 
